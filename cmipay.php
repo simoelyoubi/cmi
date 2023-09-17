@@ -1,62 +1,38 @@
 <?php
 require_once "./vendor/autoload.php";
 
-if ( $_SESSION['user_logged_in'] !== True || !isset($_SESSION['user_id'])) {
-  header("location: ../login.php"); 
-  exit();  
-} else {
-$suid = $conn->escape_string($_SESSION["user_id"]);
-}
 
-// Get CMI Settings	
-$sql = "SELECT site_url, cmi_url, cmi_id, cmi_key FROM configuration WHERE (id = '1')";
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
- while($row = $result->fetch_assoc()) { 
-$cmi_url = $row['cmi_url'];
-$cmi_id = $row['cmi_id'];
-$cmi_key = $row['cmi_key'];
-$site_url = $row['site_url'];
- }}
 
-// Get User
-$users = "SELECT shp_email, shp_name, shp_company, shp_adress, shp_phone, shp_country FROM shop WHERE user_id = '$suid' LIMIT 1";
-$users = $conn->query($users);
-if ($users->num_rows > 0) { 
-	  while($user = $users->fetch_assoc()) {
-         $codecountry = $user['shp_country'];
-         $getcountry = $conn->query("SELECT ctry_name FROM country WHERE (ctry_sym = '$codecountry')")->fetch_array();
-		 $username = $user['shp_name'];
-		 $shp_company = $user['shp_company'];
-		 $email = $user['shp_email'];
-		 $address = $user['shp_adress'];
-		 $phone = $user['shp_phone'];
-		 $country = $getcountry[0];
-	  }
-}
+//  CMI Settings	
+$cmi_url = 'test.cmi.ccom'; // CIM PAYMENT URL
+$cmi_id = '6686655'; // CMI MERCHANT ID
+$cmi_key = '6464ddsqdqsdsqdqs'; //CMI KEY
+$site_url = 'https://google.com'; //your siteweb
+
+
 	  
 $request = array("clientid"=>$cmi_id,
 "amount"=>$price,
-"okUrl"=>$site_url."/credit?paid",
-"failUrl"=>$site_url."/credit?error",
+"okUrl"=>$site_url."/thankyoupage?paid",  // success callback page
+"failUrl"=>$site_url."/thankyoupage?error",  //error callback page
 "shopurl"=>$site_url,
 "TranType"=>"PreAuth",
 "rnd"=>microtime(),
-"callbackUrl"=>$site_url."/payments/cmi-callback.php",
-"currency"=>"840",
+"callbackUrl"=>$site_url."/payments/cmi-callback.php", // callback php page for check
+"currency"=>"840", // USD OR MAD --> 840 USD currency
 "storetype"=>"3D_PAY_HOSTING",
 "hashAlgorithm"=>"ver3",
-"lang"=>"en",
-"description"=>$name,
+"lang"=>"en",  // Payment page language
+"description"=>'Product description', // product description
 "refreshtime"=>"5",
-"BillToName"=>$username,
-"BillToCompany"=>$shp_company,
-"BillToStreet1"=>$address,
-"BillToCountry"=>$country,
-"tel"=>$phone,
-"email"=>$email,
+"BillToName"=>'User name', // Client name
+"BillToCompany"=>'company', // company (Optional)
+"BillToStreet1"=>'Adress',  // Adress
+"BillToCountry"=>'MA',  // Morocco 
+"tel"=>'0500000000',  // Client phone 
+"email"=>'client@gmail.com',  // Client email
 "encoding"=>"UTF-8",
-"oid"=>$orderid);
+"oid"=>'OR-46646';  // Order id
  
 $storeKey = $cmi_key;
 
